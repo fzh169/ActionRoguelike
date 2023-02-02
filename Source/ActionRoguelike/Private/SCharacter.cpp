@@ -48,8 +48,10 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-
+	
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 }
 
 void ASCharacter::MoveForward(float value)
@@ -57,7 +59,7 @@ void ASCharacter::MoveForward(float value)
 	FRotator ControlRot = GetControlRotation();		// 控制器当前旋转方向
 	ControlRot.Pitch = 0.0f;
 	ControlRot.Roll = 0.0f;
-
+	
 	AddMovementInput(ControlRot.Vector(), value);
 }
 
