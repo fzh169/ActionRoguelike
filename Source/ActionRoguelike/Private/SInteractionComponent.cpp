@@ -72,7 +72,7 @@ void USInteractionComponent::PrimaryInteract()
 
 				ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
 
-				DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+				// DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
 
 				break;
 			}
