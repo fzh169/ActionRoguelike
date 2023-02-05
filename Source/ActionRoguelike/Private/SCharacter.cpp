@@ -25,6 +25,8 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;	// 角色旋转朝向运动方向
 
 	bUseControllerRotationYaw = false;	// 角色不使用控制器水平旋转，Pitch和Roll默认为false
+
+	AttackAnimDelay = 0.3f;
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +57,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("SecondaryAttack", IE_Pressed, this, &ASCharacter::BlackHoleAttack);
+	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASCharacter::Dash);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 }
 
@@ -84,24 +88,84 @@ void ASCharacter::MoveRight(float value)
 
 void ASCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
+	PlayAnimMontage(PrimaryAnim);
 
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, 0.3f);
-
-	// GetWorldTimerManager().ClearTimer(TimerHandle_PrimaryAttack);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, AttackAnimDelay);
 }
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FVector ProjLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);	// （方向，位置）
+	SpawnProjectile(MagicProjectileClass, ProjLocation);
+}
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
+void ASCharacter::BlackHoleAttack()
+{
+	PlayAnimMontage(BlackHoleAnim);
 
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	GetWorldTimerManager().SetTimer(TimerHandle_BlackHoleAttack, this, &ASCharacter::BlackHoleAttack_TimeElapsed, AttackAnimDelay);
+}
+
+void ASCharacter::BlackHoleAttack_TimeElapsed()
+{
+
+	FVector ProjLocation = GetMesh()->GetSocketLocation("Muzzle_02");
+
+	SpawnProjectile(BlackHoleProjectileClass, ProjLocation);
+}
+
+void ASCharacter::Dash()
+{
+	PlayAnimMontage(DashAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_Dash, this, &ASCharacter::Dash_Elapsed, AttackAnimDelay);
+}
+
+void ASCharacter::Dash_Elapsed()
+{
+	FVector ProjLocation = GetActorLocation();
+
+	SpawnProjectile(DashProjectileClass, ProjLocation);
+}
+
+void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn, FVector ProjLocation)
+{
+	if (ensureAlways(ClassToSpawn)) {
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
+
+		FCollisionShape Shape;
+		Shape.SetSphere(20.0f);
+
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+
+		FCollisionObjectQueryParams ObjParams;
+		ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+		ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
+		ObjParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		FVector TraceStart = CameraComp->GetComponentLocation();
+
+		// 终点距离观察距离较远（不太远，在未命中时仍朝十字线方向调整）
+		FVector TraceEnd = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000);
+
+		FHitResult Hit;
+		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjParams, Shape, Params)) {
+
+			TraceEnd = Hit.ImpactPoint;
+		}
+
+		// 从Muzzle_01指向撞击点的新方向/旋转
+		FRotator ProjRotation = FRotationMatrix::MakeFromX(TraceEnd - ProjLocation).Rotator();
+
+		FTransform SpawnTM = FTransform(ProjRotation, ProjLocation);	// （方向，位置）
+
+		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
+	}
 }
 
 void ASCharacter::PrimaryInteract()

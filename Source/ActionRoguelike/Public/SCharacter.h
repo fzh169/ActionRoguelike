@@ -16,14 +16,6 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-protected:
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnim;
-
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -35,11 +27,33 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> MagicProjectileClass;
 	
-	UPROPERTY(VisibleAnywhere)
-	USInteractionComponent* InteractionComp;
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> BlackHoleProjectileClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AActor> DashProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* PrimaryAnim;
+	
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* BlackHoleAnim;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* DashAnim;
+
+	float AttackAnimDelay;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
+	FTimerHandle TimerHandle_BlackHoleAttack;
+	FTimerHandle TimerHandle_Dash;
+
+	UPROPERTY(VisibleAnywhere)
+	USInteractionComponent* InteractionComp;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -49,6 +63,14 @@ protected:
 
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
+
+	void BlackHoleAttack();
+	void BlackHoleAttack_TimeElapsed();
+
+	void Dash();
+	void Dash_Elapsed();
+
+	void SpawnProjectile(TSubclassOf<AActor> ClassToSpawn, FVector ProjLocation);
 
 	void PrimaryInteract();
 
