@@ -6,6 +6,7 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SAttributeComponent.h"
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
@@ -19,11 +20,14 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if (OtherActor && OtherActor != GetInstigator()) {
 
-		DrawDebugSphere(GetWorld(), GetActorLocation(), 10.0f, 12, FColor::Red, false, 1.0f);
+		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 
-		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+		if (AttributeComp) {
 
-		Destroy();
+			AttributeComp->ApplyHealthChange(-20.0f);
+
+			Destroy();
+		}
 	}
 }
 
