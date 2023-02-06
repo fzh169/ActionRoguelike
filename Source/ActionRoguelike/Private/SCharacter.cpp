@@ -131,6 +131,7 @@ void ASCharacter::Dash_Elapsed()
 
 void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn, FVector ProjLocation)
 {
+	// check verify ensure
 	if (ensureAlways(ClassToSpawn)) {
 
 		FActorSpawnParameters SpawnParams;
