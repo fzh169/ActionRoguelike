@@ -98,7 +98,7 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
-	FVector ProjLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FVector ProjLocation = GetMesh()->GetSocketLocation("Muzzle_01");		// FName通过Hash进行快速查询
 
 	SpawnProjectile(MagicProjectileClass, ProjLocation);
 }
