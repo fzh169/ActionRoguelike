@@ -51,7 +51,7 @@ void ASProjectileBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+	// SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
 	
 	// 如果在添加此绑定之前（或使用热重载时）创建了Blueprint
 	// 则与构造函数相比，此处绑定更为一致，构造函数可能无法绑定
