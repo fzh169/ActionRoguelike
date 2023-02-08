@@ -32,6 +32,13 @@ ASCharacter::ASCharacter()
 	AttackAnimDelay = 0.3f;
 }
 
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+}
+
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
@@ -176,5 +183,15 @@ void ASCharacter::PrimaryInteract()
 {
 	if (InteractionComp) {
 		InteractionComp->PrimaryInteract();
+	}
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActorm, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+	if (NewHealth <= 0.0f && Delta <0.0f) {
+
+		APlayerController* PC = Cast<APlayerController>(GetController());
+
+		DisableInput(PC);
 	}
 }
