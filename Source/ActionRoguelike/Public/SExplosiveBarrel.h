@@ -28,6 +28,9 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
+	UFUNCTION(BlueprintCallable)
+	void Explode();
+
 	// 必须用ufunction标记才能绑定事件
 	UFUNCTION()
 	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

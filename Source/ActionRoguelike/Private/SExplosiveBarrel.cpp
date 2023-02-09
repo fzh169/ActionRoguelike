@@ -40,6 +40,11 @@ void ASExplosiveBarrel::PostInitializeComponents()
 	MeshComp->OnComponentHit.AddDynamic(this, &ASExplosiveBarrel::OnActorHit);
 }
 
+void ASExplosiveBarrel::Explode()
+{
+	ForceComp->FireImpulse();
+}
+
 void ASExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	ForceComp->FireImpulse();	// 关闭自动激活，用FireImpulse代替
