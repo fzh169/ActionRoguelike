@@ -4,27 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "SBTService_CheckAttackRange.generated.h"
+#include "SBTService_CheckHealth.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ACTIONROGUELIKE_API USBTService_CheckAttackRange : public UBTService
+class ACTIONROGUELIKE_API USBTService_CheckHealth : public UBTService
 {
 	GENERATED_BODY()
 
 public:
 
-	USBTService_CheckAttackRange();
+	USBTService_CheckHealth();
 	
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
-	FBlackboardKeySelector AttackRangeKey;
-		
-	UPROPERTY(EditAnywhere, Category = "AI")
-	float MaxAttackRange;
+	FBlackboardKeySelector LowHealthKey;
+
+	UPROPERTY(EditAnywhere, Category = "AI", meta = (ClampMin="0.0", ClampMax="1.0"))
+	float LowHealthFraction;
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };
