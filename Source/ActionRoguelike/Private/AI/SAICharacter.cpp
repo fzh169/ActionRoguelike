@@ -15,6 +15,8 @@ ASAICharacter::ASAICharacter()
 
 	TimeToHitParamName = "TimeToHit";
 	TargetActorKey = "TargetActor";
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ASAICharacter::PostInitializeComponents()
