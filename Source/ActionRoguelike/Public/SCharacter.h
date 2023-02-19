@@ -87,7 +87,7 @@ protected:
 	void PrimaryInteract();
 
 	UFUNCTION()
-	void OnHealthChanged(AActor* InstigatorActorm, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 public:	
 	// Called every frame

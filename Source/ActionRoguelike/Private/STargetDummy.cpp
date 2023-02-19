@@ -14,7 +14,7 @@ ASTargetDummy::ASTargetDummy()
     AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 }
 
-void ASTargetDummy::OnHealthChanged(AActor* InstigatorActorm, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+void ASTargetDummy::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
     if (Delta < 0.0f) {
 

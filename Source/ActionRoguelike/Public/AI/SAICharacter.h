@@ -37,5 +37,7 @@ protected:
 	void OnPawnSeen(APawn* Pawn);
 	
 	UFUNCTION()
-	void OnHealthChanged(AActor* InstigatorActorm, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	void SetTargetActor(AActor* NewTarget);
 };

@@ -191,7 +191,7 @@ void ASCharacter::PrimaryInteract()
 	}
 }
 
-void ASCharacter::OnHealthChanged(AActor* InstigatorActorm, USAttributeComponent* OwningComp, float NewHealth, float Delta)
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
 	if (Delta < 0.0f) {
 
