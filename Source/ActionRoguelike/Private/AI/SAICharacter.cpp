@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "SAttributeComponent.h"
+#include "BrainComponent.h"
 
 ASAICharacter::ASAICharacter()
 {
@@ -42,5 +43,20 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActorm, USAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
+	if (Delta < 0.0f) {
 
+
+		if (NewHealth <= 0.0f) {
+
+			AAIController* AIC = Cast<AAIController>(GetController());
+			if (AIC) {
+				AIC->GetBrainComponent()->StopLogic("Killed");
+			}
+
+			GetMesh()->SetAllBodiesSimulatePhysics(true);
+			GetMesh()->SetCollisionProfileName("Ragdoll");
+
+			SetLifeSpan(5.0f);		// ¥›ªŸ ±º‰
+		}
+	}
 }
