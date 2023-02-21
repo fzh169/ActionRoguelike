@@ -43,3 +43,25 @@ float USAttributeComponent::GetHealthMax() const
 {
 	return HealthMax;
 }
+
+USAttributeComponent* USAttributeComponent::GetAttributeComp(AActor* FromActor)
+{
+	if (FromActor) {
+
+		return Cast<USAttributeComponent>(FromActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+	}
+
+	return nullptr;
+}
+
+bool USAttributeComponent::IsActorAlive(AActor* AActor)
+{
+	USAttributeComponent* AttributeComp = GetAttributeComp(AActor);
+
+	if (AttributeComp) {
+
+		return AttributeComp->IsActive();
+	}
+
+	return false;
+}

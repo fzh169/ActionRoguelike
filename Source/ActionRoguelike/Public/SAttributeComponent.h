@@ -18,6 +18,12 @@ public:
 	// Sets default values for this component's properties
 	USAttributeComponent();
 
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	static USAttributeComponent* GetAttributeComp(AActor* FromActor);
+	
+	UFUNCTION(BlueprintCallable, Category = "Attributes", meta = (DisplayName = "IsAlive"))
+	static bool IsActorAlive(AActor* AActor);
+
 protected:
 
 	// EditAnywhere：可以在BP编辑器和关卡中的每个实例中进行编辑
