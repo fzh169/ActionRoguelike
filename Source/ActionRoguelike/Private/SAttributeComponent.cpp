@@ -60,7 +60,7 @@ bool USAttributeComponent::IsActorAlive(AActor* AActor)
 
 	if (AttributeComp) {
 
-		return AttributeComp->IsActive();
+		return AttributeComp->IsAlive();
 	}
 
 	return false;
