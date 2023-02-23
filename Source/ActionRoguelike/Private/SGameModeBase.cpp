@@ -75,3 +75,18 @@ void ASGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryIns
 		// DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.0f);
 	}
 }
+
+void ASGameModeBase::KillAll()
+{
+	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It) {
+
+		ASAICharacter* Bot = *It;
+
+		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(Bot);
+
+		if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
+
+			AttributeComp->Kill(this);		// ªÚ’ﬂ ‰»ÎPlayer
+		}
+	}
+}

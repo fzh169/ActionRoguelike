@@ -65,4 +65,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	float GetHealthMax() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool Kill(AActor* InstigatorActor);
 };
