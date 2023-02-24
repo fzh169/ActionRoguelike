@@ -8,10 +8,13 @@
 #include "AI/SAICharacter.h"
 #include "SAttributeComponent.h"
 #include "EngineUtils.h"
+#include "SCharacter.h"
 
 ASGameModeBase::ASGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
+
+	RespawnDelay = 2.0f;
 }
 
 void ASGameModeBase::StartPlay()
@@ -58,6 +61,16 @@ void ASGameModeBase::SpawnBotTimerElapsed()
 	}
 }
 
+void ASGameModeBase::RespawnPlayerElapsed(AController* controller)
+{
+	if (ensure(controller)) {
+
+		controller->UnPossess();
+
+		RestartPlayer(controller);
+	}
+}
+
 void ASGameModeBase::OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
 {
 	if (QueryStatus != EEnvQueryStatus::Success) {
@@ -89,4 +102,19 @@ void ASGameModeBase::KillAll()
 			AttributeComp->Kill(this);		// ªÚ’ﬂ ‰»ÎPlayer
 		}
 	}
+}
+
+void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
+{
+	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
+	if (Player) {
+		FTimerHandle TimerHandle_RespawnDelay;
+
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
+
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
 }

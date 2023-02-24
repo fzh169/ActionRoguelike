@@ -41,8 +41,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UCurveFloat* DifficultyCurve;
 
+	UPROPERTY(EditDefaultsOnly)
+	float RespawnDelay;
+
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
+
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* controller);
 
 	UFUNCTION()
 	void OnQueryFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
@@ -51,4 +57,6 @@ public:
 
 	UFUNCTION(Exec)
 	void KillAll();
+
+	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 };
