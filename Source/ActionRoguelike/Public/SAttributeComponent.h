@@ -43,7 +43,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float HealthMax;
 
-	// HealthMax, Stamina, Strength
+	// Stamina, Strength
 
 public:	
 

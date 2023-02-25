@@ -5,6 +5,8 @@
 #include "SGameplayInterface.h"
 #include "DrawDebugHelpers.h"
 
+static TAutoConsoleVariable<bool> CVarDrawDebugInteraction(TEXT("fm.InteractionDrawDebug"), false, TEXT("Enable Debug Lines and Spheres for Interact Component."), ECVF_Cheat);
+
 // Sets default values for this component's properties
 USInteractionComponent::USInteractionComponent()
 {
@@ -13,6 +15,8 @@ USInteractionComponent::USInteractionComponent()
 
 void USInteractionComponent::PrimaryInteract()
 {
+	bool bDrawDebug = CVarDrawDebugInteraction.GetValueOnGameThread();
+
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
@@ -42,20 +46,25 @@ void USInteractionComponent::PrimaryInteract()
 
 		AActor* HitActor = Hit.GetActor();
 
-		if (HitActor) {
-			if (HitActor->Implements<USGameplayInterface>()) {
+		if (HitActor && HitActor->Implements<USGameplayInterface>()) {
 
-				APawn* MyPawn = Cast<APawn>(MyOwner);
+			APawn* MyPawn = Cast<APawn>(MyOwner);
 
-				ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
+			ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
 
-				// DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+			if (bDrawDebug) {
 
-				break;
+				DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
 			}
+
+			break;
+
 		}
 	}
 
-	DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+	if (bDrawDebug) {
+
+		DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+	}
 }
 
