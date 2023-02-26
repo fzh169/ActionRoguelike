@@ -18,11 +18,11 @@ class ACTIONROGUELIKE_API ASPowerup_HealthPotion : public ASPowerupActor
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UStaticMeshComponent* MeshComp;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Powerup")
+	UPROPERTY(EditDefaultsOnly, Category = "HealthPotion")
 	float HealAmount;
+
+	UPROPERTY(EditDefaultsOnly, Category = "HealthPotion")
+	int32 CreditCost;
 
 public:
 

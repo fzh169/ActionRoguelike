@@ -5,14 +5,12 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "SAttributeComponent.h"
+#include "SPlayerState.h"
 
 ASPowerup_HealthPotion::ASPowerup_HealthPotion()
 {
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);		// 禁用碰撞，使用SphereComp处理交互查询
-	MeshComp->SetupAttachment(SphereComp);
-
 	HealAmount = 50.0f;
+	CreditCost = 50;
 }
 
 void ASPowerup_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
@@ -22,13 +20,17 @@ void ASPowerup_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 		return;
 	}
 
-	USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
+	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(InstigatorPawn);
 
 	if (ensure(AttributeComp) && !AttributeComp->IsFullHealth()) {
 
-		if (AttributeComp->ApplyHealthChange(this, HealAmount)) {
+		ASPlayerState* PS = InstigatorPawn->GetPlayerState<ASPlayerState>();
+
+		if (PS && PS->UseCredits(CreditCost) && AttributeComp->ApplyHealthChange(this, HealAmount)) {
 
 			HideAndCooldownPowerup();
+
 		}
+
 	}
 }

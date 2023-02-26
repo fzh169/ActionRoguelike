@@ -20,6 +20,12 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USphereComponent* SphereComp;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UStaticMeshComponent* MeshComp;
+
 	UPROPERTY(EditAnywhere, Category = "Powerup")
 	float ReSpawnTime;
 
@@ -31,9 +37,6 @@ protected:
 	void HideAndCooldownPowerup();
 
 	void SetPowerupState(bool bNewIsActive);
-
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	USphereComponent* SphereComp;
 
 public:
 
