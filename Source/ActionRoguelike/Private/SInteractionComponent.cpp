@@ -7,7 +7,6 @@
 
 static TAutoConsoleVariable<bool> CVarDrawDebugInteraction(TEXT("fm.InteractionDrawDebug"), false, TEXT("Enable Debug Lines and Spheres for Interact Component."), ECVF_Cheat);
 
-// Sets default values for this component's properties
 USInteractionComponent::USInteractionComponent()
 {
 	//

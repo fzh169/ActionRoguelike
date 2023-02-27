@@ -15,7 +15,6 @@ class ACTIONROGUELIKE_API ASPowerupActor : public AActor, public ISGameplayInter
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ASPowerupActor();
 
 protected:

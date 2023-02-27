@@ -9,7 +9,6 @@
 #include "SAttributeComponent.h"
 #include "SGameplayFunctionLibrary.h"
 
-// Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {
 	SphereComp->SetSphereRadius(20.0f);

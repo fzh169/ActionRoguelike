@@ -7,12 +7,8 @@
 #include "DrawDebugHelpers.h"
 #include "SAttributeComponent.h"
 
-// Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
 	MeshComp->SetSimulatePhysics(true);		// 在蓝图中启用模拟物理会自动将概要文件更改为PhysicsActor，在C++中需要手动更改
 	MeshComp->SetCollisionProfileName(UCollisionProfile::PhysicsActor_ProfileName);

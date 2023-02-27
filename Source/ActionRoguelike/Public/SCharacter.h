@@ -11,6 +11,7 @@ class UCameraComponent;
 class UAnimMontage;
 class USInteractionComponent;
 class USAttributeComponent;
+class USActionComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -18,7 +19,6 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ASCharacter();
 
 protected:
@@ -59,16 +59,22 @@ protected:
 	FTimerHandle TimerHandle_BlackHoleAttack;
 	FTimerHandle TimerHandle_Dash;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USInteractionComponent* InteractionComp;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USAttributeComponent* AttributeComp;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USActionComponent* ActionComp;
 
 	virtual void PostInitializeComponents() override;
 
 	void MoveForward(float value);
 	void MoveRight(float value);
+
+	void SprintStart();
+	void SprintStop();
 
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
@@ -90,7 +96,6 @@ protected:
 
 public:	
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(Exec)		// 控制台函数，仅在Player Controller, Player Character, Game Mode, Cheat Manager 等类中有效

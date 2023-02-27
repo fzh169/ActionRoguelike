@@ -6,7 +6,6 @@
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("fm.DamageMultiplier"), 1.0f, TEXT("Global Damage Multiplier for Attribute Component."), ECVF_Cheat);
 
-// Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent()
 {
 	HealthMax = 100.0f;

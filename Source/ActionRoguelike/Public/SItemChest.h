@@ -15,7 +15,6 @@ class ACTIONROGUELIKE_API ASItemChest : public AActor, public ISGameplayInterfac
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ASItemChest();
 
 	UPROPERTY(EditAnywhere)

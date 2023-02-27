@@ -4,7 +4,6 @@
 #include "SPowerupActor.h"
 #include "Components/SphereComponent.h"
 
-// Sets default values
 ASPowerupActor::ASPowerupActor()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>("ShpereComp");
