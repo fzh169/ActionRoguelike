@@ -9,6 +9,16 @@ USActionComponent::USActionComponent()
 	//
 }
 
+void USActionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	for (TSubclassOf<USAction> ActionClass : DefaultActions) {
+
+		AddAction(ActionClass);
+	}
+}
+
 void USActionComponent::AddAction(TSubclassOf<USAction> ActionClass)
 {
 	if (!ensure(ActionClass)) {
@@ -26,7 +36,7 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
 	for (USAction* Action : Actions) {
 		if (Action && Action->ActionName == ActionName) {
-			Action->startAction(Instigator);
+			Action->StartAction(Instigator);
 			return true;
 		}
 	}
@@ -37,7 +47,7 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 {
 	for (USAction* Action : Actions) {
 		if (Action && Action->ActionName == ActionName) {
-			Action->stopAction(Instigator);
+			Action->StopAction(Instigator);
 			return true;
 		}
 	}

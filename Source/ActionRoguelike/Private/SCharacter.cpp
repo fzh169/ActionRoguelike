@@ -28,10 +28,6 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;	// 角色旋转朝向运动方向
 
 	bUseControllerRotationYaw = false;	// 角色不使用控制器水平旋转，Pitch和Roll默认为false
-
-	AttackAnimDelay = 0.3f;
-
-	TimeToHitParamName = "TimeToHit";
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -103,87 +99,17 @@ void ASCharacter::SprintStop()
 
 void ASCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(PrimaryAnim);
-
-	UGameplayStatics::SpawnEmitterAttached(CastingEffect, GetMesh(), "Muzzle_01", FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, AttackAnimDelay);
-}
-
-void ASCharacter::PrimaryAttack_TimeElapsed()
-{
-	FVector ProjLocation = GetMesh()->GetSocketLocation("Muzzle_01");		// FName通过Hash进行快速查询
-
-	SpawnProjectile(MagicProjectileClass, ProjLocation);
+	ActionComp->StartActionByName(this, "Magic");
 }
 
 void ASCharacter::BlackHoleAttack()
 {
-	PlayAnimMontage(BlackHoleAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_BlackHoleAttack, this, &ASCharacter::BlackHoleAttack_TimeElapsed, AttackAnimDelay);
-}
-
-void ASCharacter::BlackHoleAttack_TimeElapsed()
-{
-
-	FVector ProjLocation = GetMesh()->GetSocketLocation("Muzzle_02");
-
-	SpawnProjectile(BlackHoleProjectileClass, ProjLocation);
+	ActionComp->StartActionByName(this, "BlackHole");
 }
 
 void ASCharacter::Dash()
 {
-	PlayAnimMontage(DashAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_Dash, this, &ASCharacter::Dash_Elapsed, AttackAnimDelay);
-}
-
-void ASCharacter::Dash_Elapsed()
-{
-	FVector ProjLocation = GetActorLocation();
-
-	SpawnProjectile(DashProjectileClass, ProjLocation);
-}
-
-void ASCharacter::SpawnProjectile(TSubclassOf<AActor> ClassToSpawn, FVector ProjLocation)
-{
-	// check verify ensure
-	if (ensureAlways(ClassToSpawn)) {
-
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-
-		FCollisionShape Shape;
-		Shape.SetSphere(20.0f);
-
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(this);
-
-		FCollisionObjectQueryParams ObjParams;
-		ObjParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjParams.AddObjectTypesToQuery(ECC_Pawn);
-
-		FVector TraceStart = CameraComp->GetComponentLocation();
-
-		// 终点距离观察距离较远（不太远，在未命中时仍朝十字线方向调整）
-		FVector TraceEnd = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000);
-
-		FHitResult Hit;
-		if (GetWorld()->SweepSingleByObjectType(Hit, TraceStart, TraceEnd, FQuat::Identity, ObjParams, Shape, Params)) {
-
-			TraceEnd = Hit.ImpactPoint;
-		}
-
-		// 从Muzzle_01指向撞击点的新方向/旋转
-		FRotator ProjRotation = FRotationMatrix::MakeFromX(TraceEnd - ProjLocation).Rotator();
-
-		FTransform SpawnTM = FTransform(ProjRotation, ProjLocation);	// （方向，位置）
-
-		GetWorld()->SpawnActor<AActor>(ClassToSpawn, SpawnTM, SpawnParams);
-	}
+	ActionComp->StartActionByName(this, "Dash");
 }
 
 void ASCharacter::PrimaryInteract()

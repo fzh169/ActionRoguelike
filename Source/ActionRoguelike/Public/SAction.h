@@ -22,8 +22,10 @@ public:
 	FName ActionName;
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
-	void startAction(AActor* Instigator);
+	void StartAction(AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
-	void stopAction(AActor* Instigator);
+	void StopAction(AActor* Instigator);
+
+	UWorld* GetWorld() const override;
 };

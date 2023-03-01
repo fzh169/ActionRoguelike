@@ -21,6 +21,9 @@ protected:
 	UPROPERTY()
 	TArray<USAction*> Actions;
 
+	UPROPERTY(EditAnywhere, Category = "Actions")
+	TArray<TSubclassOf<USAction>> DefaultActions;
+
 public:	
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
@@ -31,4 +34,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
+
+	virtual void BeginPlay() override;
 };
