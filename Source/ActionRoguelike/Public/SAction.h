@@ -19,6 +19,8 @@ class ACTIONROGUELIKE_API USAction : public UObject
 	
 protected:
 
+	bool bIsRunning;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer GrantsTags;
 
@@ -32,6 +34,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName;
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	bool IsRunning() const;
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Action")
+	bool CanStart(AActor* Instigator);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 	void StartAction(AActor* Instigator);
