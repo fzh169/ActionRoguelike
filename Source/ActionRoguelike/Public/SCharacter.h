@@ -52,6 +52,8 @@ protected:
 	void BlackHoleAttack();
 	void Dash();
 
+	void Parry();
+
 	void PrimaryInteract();
 
 	UFUNCTION()

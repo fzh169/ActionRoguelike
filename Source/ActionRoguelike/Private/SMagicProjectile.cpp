@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SAttributeComponent.h"
 #include "SGameplayFunctionLibrary.h"
+#include "SActionComponent.h"
 
 ASMagicProjectile::ASMagicProjectile()
 {
@@ -20,7 +21,18 @@ ASMagicProjectile::ASMagicProjectile()
 
 void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// static FGameplayTag Tag = FGameplayTag::RequestGameplayTag("Status.Parrying");
+
 	if (OtherActor && OtherActor != GetInstigator()) {
+
+		USActionComponent* ActionComp = Cast<USActionComponent>(OtherActor->GetComponentByClass(USActionComponent::StaticClass()));
+
+		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag)) {
+
+			MoveComp->Velocity = -MoveComp->Velocity;
+			SetInstigator(Cast<APawn>(OtherActor));
+			return;
+		}
 
 		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult)) {
 
