@@ -121,7 +121,7 @@ void ASGameModeBase::OnPowerupSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrap
 		return;
 	}
 
-	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();\
+	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 	TArray<FVector> UsedLocations;
 
 	int32 SpawnCounter = 0;

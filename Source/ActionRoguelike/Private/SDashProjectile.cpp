@@ -40,7 +40,7 @@ void ASDashProjectile::TeleportInstigator()
 	AActor* ActorToTeleport = GetInstigator();
 	if (ensure(ActorToTeleport)) {
 		// 保持Instigator的旋转，否则可能会引起震动
-		ActorToTeleport->TeleportTo(GetActorLocation(), ActorToTeleport->GetActorRotation(), false, false);
+		ActorToTeleport->TeleportTo(GetActorLocation() + 90.0f, ActorToTeleport->GetActorRotation(), false, false);
 	}
 
 	Destroy();

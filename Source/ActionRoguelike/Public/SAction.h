@@ -33,6 +33,9 @@ protected:
 public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	bool bAutoStart;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
