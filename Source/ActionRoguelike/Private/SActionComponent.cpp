@@ -14,9 +14,20 @@ void USActionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	for (TSubclassOf<USAction> ActionClass : DefaultActions) {
-
 		AddAction(GetOwner(), ActionClass);
 	}
+}
+
+void USActionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	TArray<USAction*> ActionsCopy = Actions;
+	for (USAction* Action : ActionsCopy) {
+		if (Action && Action->IsRunning()) {
+			Action->StopAction(GetOwner());
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -35,7 +46,6 @@ void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> Acti
 
 	USAction* NewAction = NewObject<USAction>(this, ActionClass);
 	if (ensure(NewAction)) {
-
 		Actions.Add(NewAction);
 		if (NewAction->bAutoStart &&ensure(NewAction->CanStart(Instigator))) {
 			NewAction->StartAction(Instigator);
@@ -46,11 +56,19 @@ void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> Acti
 void USActionComponent::RemoveAction(USAction* ActionToRemove)
 {
 	if (!ensure(ActionToRemove && !ActionToRemove->IsRunning())) {
-
 		return;
 	}
-
 	Actions.Remove(ActionToRemove);
+}
+
+USAction* USActionComponent::GetAction(TSubclassOf<USAction> ActionClass) const
+{
+	for (USAction* Action : Actions) {
+		if (Action && Action->IsA(ActionClass)) {
+			return Action;
+		}
+	}
+	return nullptr;
 }
 
 bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)

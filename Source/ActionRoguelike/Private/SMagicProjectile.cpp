@@ -14,11 +14,10 @@
 ASMagicProjectile::ASMagicProjectile()
 {
 	SphereComp->SetSphereRadius(20.0f);
-
 	MoveComp->InitialSpeed = 6000.0f;
 
 	DamageAmount = 20.0f;
-
+	InitialLifeSpan = 5.0f;
 	bParried = false;
 }
 

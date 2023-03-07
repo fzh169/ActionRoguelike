@@ -16,20 +16,15 @@ ASPowerup_HealthPotion::ASPowerup_HealthPotion()
 void ASPowerup_HealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
 	if (!(ensure(InstigatorPawn))) {
-
 		return;
 	}
 
 	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributeComp(InstigatorPawn);
-
 	if (ensure(AttributeComp) && !AttributeComp->IsFullHealth()) {
 
 		ASPlayerState* PS = InstigatorPawn->GetPlayerState<ASPlayerState>();
-
 		if (PS && PS->UseCredits(CreditCost) && AttributeComp->ApplyHealthChange(this, HealAmount)) {
-
 			HideAndCooldownPowerup();
-
 		}
 
 	}
