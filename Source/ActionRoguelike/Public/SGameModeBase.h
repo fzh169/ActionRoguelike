@@ -10,6 +10,7 @@
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+class USSaveGame;
 
 /**
  * 
@@ -23,9 +24,16 @@ public:
 
 	ASGameModeBase();
 
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
 	virtual void StartPlay() override;
 
 protected:
+
+	FString SlotName;
+
+	UPROPERTY()
+	USSaveGame* CurrentSaveGame;
 
 	FTimerHandle TimerHandle_SpawnBots;
 
@@ -77,4 +85,9 @@ public:
 	void KillAll();
 
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
+
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
 };

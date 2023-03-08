@@ -34,4 +34,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Credits")
 	FOnCreditsChanged OnCreditsChanged;
+
+
 };
