@@ -28,6 +28,8 @@ public:
 
 	virtual void StartPlay() override;
 
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
 protected:
 
 	FString SlotName;
