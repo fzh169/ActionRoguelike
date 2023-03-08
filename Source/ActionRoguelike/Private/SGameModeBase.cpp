@@ -13,6 +13,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SSaveGame.h"
 #include "GameFramework/GameStateBase.h"
+#include "SGameplayInterface.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("fm.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 
@@ -224,6 +225,19 @@ void ASGameModeBase::WriteSaveGame()
 		}
 	}
 
+	CurrentSaveGame->SavedActors.Empty();
+
+	for (FActorIterator It(GetWorld()); It; ++It) {
+		AActor* Actor = *It;
+		if (!Actor->Implements<USGameplayInterface>()) {
+			continue;
+		}
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.Transform = Actor->GetTransform();
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
+
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
 }
 
@@ -236,6 +250,19 @@ void ASGameModeBase::LoadSaveGame()
 			return;
 		}
 		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
+
+		for (FActorIterator It(GetWorld()); It; ++It) {			// µ÷ÓÃ¹ýÔç£¿
+			AActor* Actor = *It;
+			if (!Actor->Implements<USGameplayInterface>()) {
+				continue;
+			}
+			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors) {
+				if (ActorData.ActorName == Actor->GetName()) {
+					Actor->SetActorTransform(ActorData.Transform);
+					break;
+				}
+			}
+		}
 	}
 	else {
 		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));

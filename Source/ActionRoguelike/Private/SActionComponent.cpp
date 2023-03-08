@@ -6,7 +6,7 @@
 
 USActionComponent::USActionComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	// PrimaryComponentTick.bCanEverTick = true;
 }
 
 void USActionComponent::BeginPlay()
