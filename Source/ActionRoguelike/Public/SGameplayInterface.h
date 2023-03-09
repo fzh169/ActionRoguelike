@@ -21,7 +21,10 @@ class ACTIONROGUELIKE_API ISGameplayInterface
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent)
+	void OnActorLoaded();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Interact(APawn* InstigatorPawn);
 
 };

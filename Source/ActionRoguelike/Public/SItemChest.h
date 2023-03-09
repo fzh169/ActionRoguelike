@@ -17,10 +17,10 @@ class ACTIONROGUELIKE_API ASItemChest : public AActor, public ISGameplayInterfac
 public:	
 	ASItemChest();
 
-	UPROPERTY(EditAnywhere)
-	float TargetPtch;
-
 protected:
+
+	UPROPERTY(BlueprintReadOnly, SaveGame)		// ReplicatedUsing = "OnRep_LidOpened"
+	bool bLidOpened;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BaseMesh;
@@ -28,7 +28,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* LidMesh;
 
+	UFUNCTION()
+	void OnRep_LidOpened();
+
 public:
+
+	UPROPERTY(EditAnywhere)
+	float TargetPitch;
+
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 
+	void OnActorLoaded_Implementation() override;
 };

@@ -12,11 +12,23 @@ ASItemChest::ASItemChest()
 	LidMesh = CreateDefaultSubobject<UStaticMeshComponent>("LidMesh");
 	LidMesh->SetupAttachment(BaseMesh);
 
-	TargetPtch = 110;
+	TargetPitch = 110.0f;
+}
+
+void ASItemChest::OnRep_LidOpened()
+{
+	float CurrPitch = bLidOpened ? TargetPitch : 0.0f;
+	LidMesh->SetRelativeRotation(FRotator(CurrPitch, 0, 0));
+}
+
+void ASItemChest::OnActorLoaded_Implementation()
+{
+	OnRep_LidOpened();
 }
 
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
-	LidMesh->SetRelativeRotation(FRotator(TargetPtch, 0, 0));
+	bLidOpened = !bLidOpened;
+	OnRep_LidOpened();
 }
 

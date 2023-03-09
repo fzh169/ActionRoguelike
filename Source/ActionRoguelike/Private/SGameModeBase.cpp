@@ -14,6 +14,7 @@
 #include "SSaveGame.h"
 #include "GameFramework/GameStateBase.h"
 #include "SGameplayInterface.h"
+#include <Serialization/ObjectAndNameAsStringProxyArchive.h>
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("fm.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 
@@ -34,13 +35,13 @@ ASGameModeBase::ASGameModeBase()
 void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
-
-	LoadSaveGame();
 }
 
 void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
+
+	LoadSaveGame();		// InitGame
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
 
@@ -235,6 +236,12 @@ void ASGameModeBase::WriteSaveGame()
 		FActorSaveData ActorData;
 		ActorData.ActorName = Actor->GetName();
 		ActorData.Transform = Actor->GetTransform();
+
+		FMemoryWriter MemWriter(ActorData.ByteData);
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
+		Ar.ArIsSaveGame = true;			// 只寻找被标记为UPROPERTY(SaveGame)的变量
+		Actor->Serialize(Ar);
+
 		CurrentSaveGame->SavedActors.Add(ActorData);
 	}
 
@@ -259,6 +266,14 @@ void ASGameModeBase::LoadSaveGame()
 			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors) {
 				if (ActorData.ActorName == Actor->GetName()) {
 					Actor->SetActorTransform(ActorData.Transform);
+
+					FMemoryReader MemReader(ActorData.ByteData);
+					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+					Ar.ArIsSaveGame = true;
+					Actor->Serialize(Ar);
+
+					ISGameplayInterface::Execute_OnActorLoaded(Actor);
+
 					break;
 				}
 			}
