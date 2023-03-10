@@ -92,4 +92,6 @@ public:
 	void WriteSaveGame();
 
 	void LoadSaveGame();
+
+	void LoadSavedActors();
 };

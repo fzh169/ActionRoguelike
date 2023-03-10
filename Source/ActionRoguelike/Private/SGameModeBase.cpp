@@ -14,7 +14,7 @@
 #include "SSaveGame.h"
 #include "GameFramework/GameStateBase.h"
 #include "SGameplayInterface.h"
-#include <Serialization/ObjectAndNameAsStringProxyArchive.h>
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("fm.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 
@@ -35,13 +35,15 @@ ASGameModeBase::ASGameModeBase()
 void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
+
+	LoadSaveGame();
 }
 
 void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
-	LoadSaveGame();		// InitGame
+	LoadSavedActors();
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
 
@@ -257,30 +259,33 @@ void ASGameModeBase::LoadSaveGame()
 			return;
 		}
 		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
-
-		for (FActorIterator It(GetWorld()); It; ++It) {			// µ÷ÓÃ¹ýÔç£¿
-			AActor* Actor = *It;
-			if (!Actor->Implements<USGameplayInterface>()) {
-				continue;
-			}
-			for (FActorSaveData ActorData : CurrentSaveGame->SavedActors) {
-				if (ActorData.ActorName == Actor->GetName()) {
-					Actor->SetActorTransform(ActorData.Transform);
-
-					FMemoryReader MemReader(ActorData.ByteData);
-					FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
-					Ar.ArIsSaveGame = true;
-					Actor->Serialize(Ar);
-
-					ISGameplayInterface::Execute_OnActorLoaded(Actor);
-
-					break;
-				}
-			}
-		}
 	}
 	else {
 		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
 		UE_LOG(LogTemp, Log, TEXT("Created New SaveGame Data."));
+	}
+}
+
+void ASGameModeBase::LoadSavedActors()
+{
+	for (FActorIterator It(GetWorld()); It; ++It) {
+		AActor* Actor = *It;
+		if (!Actor->Implements<USGameplayInterface>()) {
+			continue;
+		}
+		for (FActorSaveData ActorData : CurrentSaveGame->SavedActors) {
+			if (ActorData.ActorName == Actor->GetName()) {
+				Actor->SetActorTransform(ActorData.Transform);
+
+				FMemoryReader MemReader(ActorData.ByteData);
+				FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+				Ar.ArIsSaveGame = true;
+				Actor->Serialize(Ar);
+
+				ISGameplayInterface::Execute_OnActorLoaded(Actor);
+
+				break;
+			}
+		}
 	}
 }
