@@ -27,6 +27,8 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);
 
 	bIsRunning = true;
+
+	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
 }
 
 void USAction::StopAction_Implementation(AActor* Instigator)
@@ -39,6 +41,8 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 	Comp->ActiveGameplayTags.RemoveTags(GrantsTags);
 
 	bIsRunning = false;
+
+	GetOwningComponent()->OnActionStopped.Broadcast(GetOwningComponent(), this);
 }
 
 UWorld* USAction::GetWorld() const
