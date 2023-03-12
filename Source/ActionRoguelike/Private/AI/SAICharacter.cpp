@@ -60,16 +60,12 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 	if (Delta < 0.0f) {
 
 		if (InstigatorActor != this) {		// 未检查是否为玩家
-
 			SetTargetActor(InstigatorActor);
 		}
 
 		if (ActiveHealthBar == nullptr) {
-
 			ActiveHealthBar = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
-
 			if (ActiveHealthBar) {
-
 				ActiveHealthBar->AttachedActor = this;
 				ActiveHealthBar->AddToViewport();
 			}

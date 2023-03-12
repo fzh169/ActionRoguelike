@@ -12,11 +12,9 @@ void USWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	if (!IsValid(AttachedActor)) {
-
 		RemoveFromParent();
 
 		UE_LOG(LogTemp, Log, TEXT("AttachedActor no longer valid, removing Health Widget."));
-
 		return;
 	}
 

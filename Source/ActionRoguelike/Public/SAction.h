@@ -21,6 +21,8 @@ protected:
 
 	bool bIsRunning;
 
+	float TimeStarted;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
 	UTexture2D* Icon;
 

@@ -27,6 +27,7 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);
 
 	bIsRunning = true;
+	TimeStarted = GetWorld()->TimeSeconds;
 
 	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
 }

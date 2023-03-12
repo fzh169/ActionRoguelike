@@ -18,7 +18,7 @@ class ACTIONROGUELIKE_API USWorldUserWidget : public UUserWidget
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, Category = "UI")
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
 	AActor* AttachedActor;	// 属性系统：摧毁自动置空指针
 
 protected:
