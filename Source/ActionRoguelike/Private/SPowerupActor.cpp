@@ -36,6 +36,11 @@ void ASPowerupActor::SetPowerupState(bool bNewIsActive)
 	RootComponent->SetVisibility(bNewIsActive, true);	// 设置root和所有子组件的可见性
 }
 
+FText ASPowerupActor::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
+}
+
 void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// derived classes

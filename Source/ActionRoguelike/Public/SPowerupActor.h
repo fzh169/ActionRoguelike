@@ -39,5 +39,7 @@ protected:
 
 public:
 
+	FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+
 	void Interact_Implementation(APawn* InstigatorPawn) override;
 };
