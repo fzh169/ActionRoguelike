@@ -17,6 +17,7 @@
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 #include "SMonsterData.h"
 #include "SActionComponent.h"
+#include "Engine/AssetManager.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("fm.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 
@@ -141,12 +142,30 @@ void ASGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper*
 			int32 RandomIndex = FMath::RandRange(0, Rows.Num() - 1);
 			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
 
-			AActor* NewBot = GetWorld()->SpawnActor<AActor>(SelectedRow->MonsterData->MonsterClass, Locations[0], FRotator::ZeroRotator);
+			UAssetManager* Manager = UAssetManager::GetIfValid();
+			if (Manager) {
+				UE_LOG(LogTemp, Log, TEXT("Loading Monster."));
+				TArray<FName> Bundles;		// 同时加载的资产
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterID, Locations[0]);
+				Manager->LoadPrimaryAsset(SelectedRow->MonsterID, Bundles, Delegate);
+			}
+		}
+	}
+}
+
+void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
+{
+	UE_LOG(LogTemp, Log, TEXT("Finished Loading."));
+	UAssetManager* Manager = UAssetManager::GetIfValid();
+	if (Manager) {
+		USMonsterData* MonsterData = Cast<USMonsterData>(Manager->GetPrimaryAssetObject(LoadedId));
+		if (MonsterData) {
+			AActor* NewBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
 			if (NewBot) {
-				UE_LOG(LogTemp, Log, TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(SelectedRow->MonsterData));
+				UE_LOG(LogTemp, Log, TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(NewBot), *GetNameSafe(MonsterData));
 				USActionComponent* ActionComp = Cast<USActionComponent>(NewBot->GetComponentByClass(USActionComponent::StaticClass()));
 				if (ActionComp) {
-					for (TSubclassOf<USAction> ActionClass : SelectedRow->MonsterData->Actions) {
+					for (TSubclassOf<USAction> ActionClass : MonsterData->Actions) {
 						ActionComp->AddAction(NewBot, ActionClass);
 					}
 				}
