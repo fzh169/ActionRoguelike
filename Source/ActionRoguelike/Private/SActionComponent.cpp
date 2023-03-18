@@ -86,6 +86,8 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 				continue;
 			}
 
+			TRACE_BOOKMARK(TEXT("StartAction::%s"), *GetNameSafe(Action));		// Bookmark for Unreal Insights
+
 			Action->StartAction(Instigator);
 			return true;
 		}

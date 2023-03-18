@@ -12,7 +12,6 @@ bool USAction::CanStart_Implementation(AActor* Instigator)
 
 	USActionComponent* Comp = GetOwningComponent();
 	if (Comp->ActiveGameplayTags.HasAny(BlockedTags)) {
-
 		return false;
 	}
 
