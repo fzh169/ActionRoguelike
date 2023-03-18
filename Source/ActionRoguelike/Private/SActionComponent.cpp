@@ -4,6 +4,8 @@
 #include "SActionComponent.h"
 #include "SAction.h"
 
+DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_FANMI);
+
 USActionComponent::USActionComponent()
 {
 	// PrimaryComponentTick.bCanEverTick = true;
@@ -73,6 +75,8 @@ USAction* USActionComponent::GetAction(TSubclassOf<USAction> ActionClass) const
 
 bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
+	SCOPE_CYCLE_COUNTER(STAT_StartActionByName);
+
 	for (USAction* Action : Actions) {
 		if (Action && Action->ActionName == ActionName) {
 

@@ -18,6 +18,7 @@
 #include "SMonsterData.h"
 #include "SActionComponent.h"
 #include "Engine/AssetManager.h"
+#include "../ActionRoguelike.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("fm.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 
@@ -144,7 +145,7 @@ void ASGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper*
 
 			UAssetManager* Manager = UAssetManager::GetIfValid();
 			if (Manager) {
-				UE_LOG(LogTemp, Log, TEXT("Loading Monster."));
+				LogOnScreen(this, FString::Printf(TEXT("Loading Monster.")));
 				TArray<FName> Bundles;		// 同时加载的资产
 				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterID, Locations[0]);
 				Manager->LoadPrimaryAsset(SelectedRow->MonsterID, Bundles, Delegate);
@@ -155,7 +156,7 @@ void ASGameModeBase::OnBotSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper*
 
 void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
 {
-	UE_LOG(LogTemp, Log, TEXT("Finished Loading."));
+	LogOnScreen(this, FString::Printf(TEXT("Finished Loading.")));
 	UAssetManager* Manager = UAssetManager::GetIfValid();
 	if (Manager) {
 		USMonsterData* MonsterData = Cast<USMonsterData>(Manager->GetPrimaryAssetObject(LoadedId));
