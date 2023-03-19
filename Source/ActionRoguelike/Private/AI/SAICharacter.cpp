@@ -15,14 +15,12 @@
 ASAICharacter::ASAICharacter()
 {
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComponent");
-
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
-
 	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);	// 预定义通道：Projectile
+	// GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Ignore);	// 预定义通道：Projectile
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParamName = "TimeToHit";

@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	FVector WorldOffset;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	FVector2D ScreenOffset;
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 };

@@ -20,14 +20,14 @@ ASCharacter::ASCharacter()
 	CameraComp->SetupAttachment(SpringArmComp);
 
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
-
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
-
 	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;	// 角色旋转朝向运动方向
 
 	bUseControllerRotationYaw = false;	// 角色不使用控制器水平旋转，Pitch和Roll默认为false
+
+	GetMesh()->SetGenerateOverlapEvents(true);
 }
 
 void ASCharacter::PostInitializeComponents()
