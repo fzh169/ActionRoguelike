@@ -39,6 +39,11 @@ protected:
 
 	void FindBestInteractable();
 
+	// Realiable - 最终总会到来。除非收到确认，否则将重新发送请求。
+	// Unrealiable - 不能保证，数据包可能会丢失并且不会重试。
+	UFUNCTION(Server, Reliable)
+	void ServerInteract(AActor* InFocus);
+
 public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

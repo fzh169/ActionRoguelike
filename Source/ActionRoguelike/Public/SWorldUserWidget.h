@@ -33,5 +33,4 @@ protected:
 	FVector2D ScreenOffset;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
 };
