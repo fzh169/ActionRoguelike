@@ -15,6 +15,7 @@ ASPowerupActor::ASPowerupActor()
 	MeshComp->SetupAttachment(SphereComp);
 
 	ReSpawnTime = 10.0f;
+	bReplicates = true;
 }
 
 void ASPowerupActor::ShowPowerup()

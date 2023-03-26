@@ -14,8 +14,7 @@ ASItemChest::ASItemChest()
 	LidMesh->SetupAttachment(BaseMesh);
 
 	TargetPitch = 110.0f;
-
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ASItemChest::OnRep_LidOpened()
