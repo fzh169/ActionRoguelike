@@ -19,8 +19,8 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, SaveGame)		// ReplicatedUsing = "OnRep_LidOpened"
-	bool bLidOpened;
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = "OnRep_LidOpened", SaveGame)
+	bool bLidOpened;		// ReplicatedUsing只在客户端触发
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BaseMesh;

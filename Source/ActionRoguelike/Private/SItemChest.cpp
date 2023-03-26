@@ -3,6 +3,7 @@
 
 #include "SItemChest.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ASItemChest::ASItemChest()
 {
@@ -13,6 +14,8 @@ ASItemChest::ASItemChest()
 	LidMesh->SetupAttachment(BaseMesh);
 
 	TargetPitch = 110.0f;
+
+	SetReplicates(true);
 }
 
 void ASItemChest::OnRep_LidOpened()
@@ -32,3 +35,9 @@ void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 	OnRep_LidOpened();
 }
 
+void ASItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASItemChest, bLidOpened);		// 无条件将服务器端的信息发送给所有客户端
+}
