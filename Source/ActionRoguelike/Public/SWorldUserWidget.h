@@ -18,19 +18,19 @@ class ACTIONROGUELIKE_API USWorldUserWidget : public UUserWidget
 
 public:
 
-	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	UPROPERTY(BlueprintReadOnly, Category = "UI", meta = (ExposeOnSpawn = true))
 	AActor* AttachedActor;	// 属性系统：摧毁自动置空指针
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	FVector WorldOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	FVector2D ScreenOffset;
 
 protected:
 
 	UPROPERTY(meta = (BindWidget))
 	USizeBox* ParentSizeBox;
-
-	UPROPERTY(EditAnywhere, Category = "UI")
-	FVector WorldOffset;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	FVector2D ScreenOffset;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };

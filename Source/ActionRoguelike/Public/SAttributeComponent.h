@@ -36,10 +36,10 @@ protected:
 	// 
 	// Category = ""：仅在细节面板和蓝图上下文菜单中显示
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float HealthMax;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
@@ -49,6 +49,9 @@ protected:
 	float RageMax;
 
 	// Stamina, Strength
+
+	UFUNCTION(NetMulticast, Reliable)		// 可靠的多播将忽略相关性
+	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
 
 public:	
 

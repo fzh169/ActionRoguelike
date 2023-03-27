@@ -3,6 +3,7 @@
 
 #include "SAttributeComponent.h"
 #include "SGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("fm.DamageMultiplier"), 1.0f, TEXT("Global Damage Multiplier for Attribute Component."), ECVF_Cheat);
 
@@ -13,6 +14,8 @@ USAttributeComponent::USAttributeComponent()
 
 	RageMax = 100.0f;
 	Rage = 0.0f;
+
+	SetIsReplicatedByDefault(true);
 }
 
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
@@ -30,7 +33,8 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	float ActualDelta = Health - OldHealth;
 
 	if (ActualDelta != 0.0f) {
-		OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+		// OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
 	}
 
 	if (ActualDelta < 0.0f && Health == 0.0f) {
@@ -109,4 +113,19 @@ bool USAttributeComponent::IsActorAlive(AActor* AActor)
 	}
 
 	return false;
+}
+
+void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
+}
+
+void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USAttributeComponent, Health);			// 无条件将服务器端的信息发送给所有客户端
+	DOREPLIFETIME(USAttributeComponent, HealthMax);
+
+	// DOREPLIFETIME_CONDITION(USAttributeComponent, HealthMax, COND_InitialOnly);
 }

@@ -38,5 +38,5 @@ void ASItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASItemChest, bLidOpened);		// 无条件将服务器端的信息发送给所有客户端
+	DOREPLIFETIME(ASItemChest, bLidOpened);
 }
