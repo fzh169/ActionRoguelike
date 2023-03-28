@@ -54,7 +54,7 @@ void ASGameModeBase::StartPlay()
 
 	LoadSavedActors();
 
-	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
+	// GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
 
 	if (ensure(PowerupClasses.Num() > 0)) {
 

@@ -9,6 +9,8 @@ DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_
 USActionComponent::USActionComponent()
 {
 	// PrimaryComponentTick.bCanEverTick = true;
+
+	SetIsReplicatedByDefault(true);
 }
 
 void USActionComponent::BeginPlay()
@@ -88,6 +90,10 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 
 			TRACE_BOOKMARK(TEXT("StartAction::%s"), *GetNameSafe(Action));		// Bookmark for Unreal Insights
 
+			if (!GetOwner()->HasAuthority()) {		// Client
+				ServerStartAction(Instigator, ActionName);
+			}
+
 			Action->StartAction(Instigator);
 			return true;
 		}
@@ -107,4 +113,9 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 		}
 	}
 	return false;
+}
+
+void USActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StartActionByName(Instigator, ActionName);
 }
