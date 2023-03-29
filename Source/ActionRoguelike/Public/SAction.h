@@ -19,6 +19,7 @@ class ACTIONROGUELIKE_API USAction : public UObject
 	
 protected:
 
+	UPROPERTY(ReplicatedUsing = "OnRep_IsRunning")		// 仅当通过网络收到的新值与本地旧值不同时被触发
 	bool bIsRunning;
 
 	float TimeStarted;
@@ -34,6 +35,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	USActionComponent* GetOwningComponent() const;
+
+	UFUNCTION()
+	void OnRep_IsRunning();
 
 public:
 
@@ -56,4 +60,6 @@ public:
 	void StopAction(AActor* Instigator);
 
 	UWorld* GetWorld() const override;
+
+	bool IsSupportedForNetworking() const override { return true; }
 };

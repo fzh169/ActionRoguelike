@@ -4,6 +4,7 @@
 #include "SAction.h"
 #include "SActionComponent.h"
 #include "../ActionRoguelike.h"
+#include "Net/UnrealNetwork.h"
 
 bool USAction::CanStart_Implementation(AActor* Instigator)
 {
@@ -38,7 +39,7 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 	// UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
 	LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::Red);
 
-	ensureAlways(bIsRunning);
+	// ensureAlways(bIsRunning);		// 不适用于客户端
 
 	USActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.RemoveTags(GrantsTags);
@@ -50,8 +51,9 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 
 UWorld* USAction::GetWorld() const
 {
-	if (UActorComponent* Comp = Cast<UActorComponent>(GetOuter())) {
-		
+	// Outer在通过NewObject<T>创建Action时设置
+	USActionComponent* Comp = Cast<USActionComponent>(GetOuter());
+	if (Comp) {
 		return Comp->GetWorld();
 	}
 	return nullptr;
@@ -62,7 +64,24 @@ USActionComponent* USAction::GetOwningComponent() const
 	return Cast<USActionComponent>(GetOuter());
 }
 
+void USAction::OnRep_IsRunning()
+{
+	if (bIsRunning) {
+		StartAction(nullptr);
+	}
+	else {
+		StopAction(nullptr);
+	}
+}
+
 bool USAction::IsRunning() const
 {
 	return bIsRunning;
+}
+
+void USAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USAction, bIsRunning);
 }

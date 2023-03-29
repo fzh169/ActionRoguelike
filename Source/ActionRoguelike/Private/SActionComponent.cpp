@@ -5,6 +5,7 @@
 #include "SAction.h"
 #include "Net/UnrealNetwork.h"
 #include "../ActionRoguelike.h"
+#include "Engine/ActorChannel.h"
 
 DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_FANMI);
 
@@ -19,8 +20,10 @@ void USActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (TSubclassOf<USAction> ActionClass : DefaultActions) {
-		AddAction(GetOwner(), ActionClass);
+	if (GetOwner()->HasAuthority()) {		// 只在服务器端添加，客户端为副本
+		for (TSubclassOf<USAction> ActionClass : DefaultActions) {
+			AddAction(GetOwner(), ActionClass);
+		}
 	}
 }
 
@@ -49,7 +52,7 @@ void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 			*GetNameSafe(GetOwner()),
 			*Action->ActionName.ToString(),
 			Action->IsRunning() ? TEXT("True") : TEXT("False"),
-			*GetNameSafe(GetOuter())
+			*GetNameSafe(Action->GetOuter())
 		);
 		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 	}
@@ -64,7 +67,7 @@ void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> Acti
 	USAction* NewAction = NewObject<USAction>(this, ActionClass);
 	if (ensure(NewAction)) {
 		Actions.Add(NewAction);
-		if (NewAction->bAutoStart &&ensure(NewAction->CanStart(Instigator))) {
+		if (NewAction->bAutoStart && ensure(NewAction->CanStart(Instigator))) {
 			NewAction->StartAction(Instigator);
 		}
 	}
@@ -133,9 +136,20 @@ void USActionComponent::ServerStartAction_Implementation(AActor* Instigator, FNa
 	StartActionByName(Instigator, ActionName);
 }
 
-/*void USActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+bool USActionComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	for (USAction* Action : Actions) {
+		if (Action) {
+			WroteSomething |= Channel->ReplicateSubobject(Action, *Bunch, *RepFlags);
+		}
+	}
+	return WroteSomething;		// 是否被修改
+}
+
+void USActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(USActionComponent, Actions);
-}*/
+}
