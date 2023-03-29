@@ -27,9 +27,7 @@ ASGameModeBase::ASGameModeBase()
 	SlotName = "SaveGame01";
 
 	SpawnTimerInterval = 2.0f;
-
 	RespawnDelay = 10.0f;
-
 	CreditsPerKill = 20;
 
 	DesiredPowerupCount = 10;
@@ -69,12 +67,12 @@ void ASGameModeBase::StartPlay()
 
 void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-
 	ASPlayerState* PS = NewPlayer->GetPlayerState<ASPlayerState>();
 	if (ensure(PS)) {
 		PS->LoadPlayerState(CurrentSaveGame);
 	}
+
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);		// 将调用PlayerController中的BeginPlayingState()
 }
 
 void ASGameModeBase::SpawnBotTimerElapsed()

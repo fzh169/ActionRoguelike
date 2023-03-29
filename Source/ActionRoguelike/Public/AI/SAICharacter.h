@@ -18,6 +18,7 @@ class ACTIONROGUELIKE_API ASAICharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+
 	ASAICharacter();
 
 protected:
@@ -49,6 +50,9 @@ protected:
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPawnSeen();
 	
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);

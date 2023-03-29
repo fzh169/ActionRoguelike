@@ -3,6 +3,7 @@
 
 #include "SPowerupActor.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ASPowerupActor::ASPowerupActor()
 {
@@ -16,6 +17,13 @@ ASPowerupActor::ASPowerupActor()
 
 	ReSpawnTime = 10.0f;
 	bReplicates = true;
+	bIsActive = true;
+}
+
+void ASPowerupActor::OnRep_IsActive()
+{
+	SetActorEnableCollision(bIsActive);
+	RootComponent->SetVisibility(bIsActive, true);	// 设置root和所有子组件的可见性
 }
 
 void ASPowerupActor::ShowPowerup()
@@ -26,15 +34,13 @@ void ASPowerupActor::ShowPowerup()
 void ASPowerupActor::HideAndCooldownPowerup()
 {
 	SetPowerupState(false);
-
 	GetWorldTimerManager().SetTimer(ReSpawnTimer, this, &ASPowerupActor::ShowPowerup, ReSpawnTime);
 }
 
 void ASPowerupActor::SetPowerupState(bool bNewIsActive)
 {
-	SetActorEnableCollision(bNewIsActive);
-
-	RootComponent->SetVisibility(bNewIsActive, true);	// 设置root和所有子组件的可见性
+	bIsActive = bNewIsActive;		// 改变值触发客户端OnRep_IsActive()
+	OnRep_IsActive();				// 服务器直接调用
 }
 
 FText ASPowerupActor::GetInteractText_Implementation(APawn* InstigatorPawn)
@@ -45,4 +51,11 @@ FText ASPowerupActor::GetInteractText_Implementation(APawn* InstigatorPawn)
 void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)
 {
 	// derived classes
+}
+
+void ASPowerupActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASPowerupActor, bIsActive);
 }

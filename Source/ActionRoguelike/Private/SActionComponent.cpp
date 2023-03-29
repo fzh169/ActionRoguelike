@@ -3,6 +3,7 @@
 
 #include "SActionComponent.h"
 #include "SAction.h"
+#include "Net/UnrealNetwork.h"
 
 DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_FANMI);
 
@@ -119,3 +120,10 @@ void USActionComponent::ServerStartAction_Implementation(AActor* Instigator, FNa
 {
 	StartActionByName(Instigator, ActionName);
 }
+
+/*void USActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USActionComponent, Actions);
+}*/

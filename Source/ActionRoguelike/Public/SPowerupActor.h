@@ -19,6 +19,9 @@ public:
 
 protected:
 
+	UPROPERTY(ReplicatedUsing = "OnRep_IsActive")
+	bool bIsActive;
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* SphereComp;
 	
@@ -29,6 +32,9 @@ protected:
 	float ReSpawnTime;
 
 	FTimerHandle ReSpawnTimer;
+
+	UFUNCTION()
+	void OnRep_IsActive();
 
 	UFUNCTION()
 	void ShowPowerup();

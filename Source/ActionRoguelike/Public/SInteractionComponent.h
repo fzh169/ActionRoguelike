@@ -42,7 +42,7 @@ protected:
 	// Reliable - 最终总会到来。除非收到确认，否则将重新发送请求。
 	// Unreliable - 不能保证，数据包可能会丢失并且不会重试。
 	UFUNCTION(Server, Reliable)
-	void ServerInteract(AActor* InFocus);
+	void ServerInteract(AActor* InFocus);			// 客户端请求，服务器端执行。
 
 public:
 

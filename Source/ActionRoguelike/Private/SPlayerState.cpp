@@ -3,6 +3,17 @@
 
 #include "SPlayerState.h"
 #include "SSaveGame.h"
+#include "Net/UnrealNetwork.h"
+
+void ASPlayerState::OnRep_Credits(int32 OldCredits)
+{
+	OnCreditsChanged.Broadcast(this, Credits, Credits - OldCredits);
+}
+
+/*void ASPlayerState::MulticastCredits_Implementation(float NewCredits, float Delta)
+{
+	OnCreditsChanged.Broadcast(this, NewCredits, Delta);
+}*/
 
 int32 ASPlayerState::GetCredits() const
 {
@@ -11,7 +22,7 @@ int32 ASPlayerState::GetCredits() const
 
 void ASPlayerState::AddCredits(int32 Delta)
 {
-	if (ensure(Delta > 0.0f)) {
+	if (ensure(Delta >= 0.0f)) {
 
 		Credits += Delta;
 
@@ -21,7 +32,7 @@ void ASPlayerState::AddCredits(int32 Delta)
 
 bool ASPlayerState::UseCredits(int32 Delta)
 {
-	if (ensure(Delta > 0.0f)) {
+	if (ensure(Delta >= 0.0f)) {
 
 		if (Credits >= Delta) {
 
@@ -46,6 +57,13 @@ void ASPlayerState::SavePlayerState_Implementation(USSaveGame* SaveObject)
 void ASPlayerState::LoadPlayerState_Implementation(USSaveGame* SaveObject)
 {
 	if (SaveObject) {
-		Credits = SaveObject->Credits;
+		AddCredits(SaveObject->Credits);		// ´¥·¢OnCreditsChanged
 	}
+}
+
+void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASPlayerState, Credits);
 }

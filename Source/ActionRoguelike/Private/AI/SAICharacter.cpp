@@ -36,21 +36,23 @@ void ASAICharacter::PostInitializeComponents()
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
 }
 
-void ASAICharacter::OnPawnSeen(APawn* Pawn)
+void ASAICharacter::OnPawnSeen(APawn* Pawn)		// 只在服务器上运行
 {
 	if (GetTargetActor() != Pawn) {
-
 		SetTargetActor(Pawn);
-
-		USWorldUserWidget* NewWidget = CreateWidget<USWorldUserWidget>(GetWorld(), SpottedWidgetClass);
-		if (NewWidget)
-		{
-			NewWidget->AttachedActor = this;
-			NewWidget->AddToViewport(10);		// Top
-		}
+		MulticastPawnSeen();		// 在客户端调用
 	}
 
 	// DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+}
+
+void ASAICharacter::MulticastPawnSeen_Implementation()
+{
+	USWorldUserWidget* NewWidget = CreateWidget<USWorldUserWidget>(GetWorld(), SpottedWidgetClass);
+	if (NewWidget) {
+		NewWidget->AttachedActor = this;
+		NewWidget->AddToViewport(10);		// Top
+	}
 }
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta)
