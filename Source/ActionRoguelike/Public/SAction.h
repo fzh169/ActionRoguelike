@@ -9,6 +9,20 @@
 
 class USActionComponent;
 
+USTRUCT()
+struct FActionRepData
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()				// 在结构体内部默认Replicated，无需复制的变量需标记为NotReplicated。
+	bool bIsRunning;
+
+	UPROPERTY()
+	AActor* Instigator;
+};
+
 /**
  * 
  */
@@ -19,8 +33,8 @@ class ACTIONROGUELIKE_API USAction : public UObject
 	
 protected:
 
-	UPROPERTY(ReplicatedUsing = "OnRep_IsRunning")		// 仅当通过网络收到的新值与本地旧值不同时被触发
-	bool bIsRunning;
+	UPROPERTY(ReplicatedUsing = "OnRep_RepData")		// 仅当通过网络收到的新值与本地旧值不同时被触发
+	FActionRepData RepData;
 
 	float TimeStarted;
 
@@ -37,7 +51,7 @@ protected:
 	USActionComponent* GetOwningComponent() const;
 
 	UFUNCTION()
-	void OnRep_IsRunning();
+	void OnRep_RepData();
 
 public:
 

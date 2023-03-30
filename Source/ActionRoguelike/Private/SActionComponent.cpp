@@ -48,12 +48,7 @@ void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	for (USAction* Action : Actions) {
 		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
-		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s : IsRunning: %s : Outer: %s"),
-			*GetNameSafe(GetOwner()),
-			*Action->ActionName.ToString(),
-			Action->IsRunning() ? TEXT("True") : TEXT("False"),
-			*GetNameSafe(Action->GetOuter())
-		);
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s"), *GetNameSafe(GetOwner()), *GetNameSafe(Action));
 		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 	}
 }
@@ -110,7 +105,7 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 				ServerStartAction(Instigator, ActionName);
 			}
 
-			Action->StartAction(Instigator);
+			Action->StartAction(Instigator);		// 减少客户端动画延迟
 			return true;
 		}
 	}

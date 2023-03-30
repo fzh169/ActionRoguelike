@@ -29,18 +29,20 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	}
 
 	float OldHealth = Health;
-	Health = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
-	float ActualDelta = Health - OldHealth;
+	float NewHealth = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
+	float ActualDelta = NewHealth - OldHealth;
 
-	if (ActualDelta != 0.0f) {
-		// OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
-	}
+	if (GetOwner()->HasAuthority()) {		// 只有服务器可以真正修改Health
+		Health = NewHealth;
+		if (ActualDelta != 0.0f) {
+			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+		}
 
-	if (ActualDelta < 0.0f && Health == 0.0f) {
-		ASGameModeBase* GM = Cast<ASGameModeBase>(GetWorld()->GetAuthGameMode());
-		if (GM) {
-			GM->OnActorKilled(GetOwner(), InstigatorActor);
+		if (ActualDelta < 0.0f && Health == 0.0f) {
+			ASGameModeBase* GM = Cast<ASGameModeBase>(GetWorld()->GetAuthGameMode());
+			if (GM) {
+				GM->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 	}
 
@@ -50,11 +52,14 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
 {
 	float OldRage = Rage;
-	Rage = FMath::Clamp(Rage + Delta, 0.0f, RageMax);
-	float ActualDelta = Rage - OldRage;
+	float NewRage = FMath::Clamp(Rage + Delta, 0.0f, RageMax);
+	float ActualDelta = NewRage - OldRage;
 
-	if (ActualDelta) {
-		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+	if (GetOwner()->HasAuthority()) {
+		Rage = NewRage;
+		if (ActualDelta != 0.0f) {
+			MulticastRageChanged(InstigatorActor, Rage, ActualDelta);
+		}
 	}
 
 	return ActualDelta != 0.0f;
