@@ -59,6 +59,11 @@ void USActionComponent::AddAction(AActor* Instigator, TSubclassOf<USAction> Acti
 		return;
 	}
 
+	if (!GetOwner()->HasAuthority()) {
+		UE_LOG(LogTemp, Warning, TEXT("Client attempting to AddAction. [Class: %s]"), *GetNameSafe(ActionClass));
+		return;
+	}
+
 	USAction* NewAction = NewObject<USAction>(this, ActionClass);
 	if (ensure(NewAction)) {
 		Actions.Add(NewAction);
@@ -101,7 +106,7 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 
 			TRACE_BOOKMARK(TEXT("StartAction::%s"), *GetNameSafe(Action));		// Bookmark for Unreal Insights
 
-			if (!GetOwner()->HasAuthority()) {		// Client
+			if (!GetOwner()->HasAuthority()) {		// ¿Í»§¶Ë
 				ServerStartAction(Instigator, ActionName);
 			}
 
@@ -118,6 +123,9 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 		if (Action && Action->ActionName == ActionName) {
 
 			if (Action->IsRunning()) {
+				if (!GetOwner()->HasAuthority()) {
+					ServerStopAction(Instigator, ActionName);
+				}
 				Action->StopAction(Instigator);
 				return true;
 			}
@@ -129,6 +137,11 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 void USActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
 {
 	StartActionByName(Instigator, ActionName);
+}
+
+void USActionComponent::ServerStopAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StopActionByName(Instigator, ActionName);
 }
 
 bool USActionComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags)
