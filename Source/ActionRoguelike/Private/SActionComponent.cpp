@@ -11,7 +11,7 @@ DECLARE_CYCLE_STAT(TEXT("StartActionByName"), STAT_StartActionByName, STATGROUP_
 
 USActionComponent::USActionComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	// PrimaryComponentTick.bCanEverTick = true;
 
 	SetIsReplicatedByDefault(true);
 }

@@ -40,10 +40,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USActionComponent* ActionComp;
 
-	virtual void PostInitializeComponents() override;
+	UPROPERTY(EditAnywhere)
+	float TurnRate;
+
+	UPROPERTY(EditAnywhere)
+	float LookUpRate;
+
+	void PostInitializeComponents() override;
 
 	void MoveForward(float value);
 	void MoveRight(float value);
+
+	void Turn(float value);
+	void LookUp(float value);
 
 	void SprintStart();
 	void SprintStop();
@@ -59,11 +68,11 @@ protected:
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
-	virtual FVector GetPawnViewLocation() const override;
+	FVector GetPawnViewLocation() const override;
 
 public:	
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(Exec)		// 控制台函数，仅在Player Controller, Player Character, Game Mode, Cheat Manager 等类中有效
 	void  HealSelf(float Amount = 100.0f);

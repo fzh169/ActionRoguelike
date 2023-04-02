@@ -9,6 +9,7 @@
 #include "SAttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SActionComponent.h"
+#include "../ActionRoguelike.h"
 
 ASCharacter::ASCharacter()
 {
@@ -28,6 +29,9 @@ ASCharacter::ASCharacter()
 	bUseControllerRotationYaw = false;	// 角色不使用控制器水平旋转，Pitch和Roll默认为false
 
 	GetMesh()->SetGenerateOverlapEvents(true);
+
+	TurnRate = 0.5f;
+	LookUpRate = 0.5f;
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -47,8 +51,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
 
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("Turn", this, &ASCharacter::Turn);
+	PlayerInputComponent->BindAxis("LookUp", this, &ASCharacter::LookUp);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 
@@ -88,6 +92,31 @@ void ASCharacter::MoveRight(float value)
 	FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 
 	AddMovementInput(RightVector, value);
+}
+
+void ASCharacter::Turn(float value)
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC && PC->IsLocalPlayerController() && PC->IsInputKeyDown(EKeys::RightMouseButton)) {
+		AddControllerYawInput(TurnRate * value);
+	}
+}
+
+void ASCharacter::LookUp(float value)
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC && PC->IsLocalPlayerController() && PC->IsInputKeyDown(EKeys::RightMouseButton)) {
+		AddControllerPitchInput(LookUpRate * value);
+		FRotator ControlRot = GetControlRotation();
+		// LogOnScreen(this, FString::Printf(TEXT("Running: %s"), *ControlRot.ToString()), FColor::Green);
+		if (!((ControlRot.Pitch > 0.0f && ControlRot.Pitch < 10.0f) || (ControlRot.Pitch > 330.0f && ControlRot.Pitch < 360.0f))) {
+			if (FMath::Abs(ControlRot.Pitch - 10.0f) < 10.0f)
+				ControlRot.Pitch = 10.0f;
+			else
+				ControlRot.Pitch = 330.0f;
+			PC->SetControlRotation(ControlRot);
+		}
+	}
 }
 
 void ASCharacter::SprintStart()
