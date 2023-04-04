@@ -109,7 +109,7 @@ void ASCharacter::LookUp(float value)
 		AddControllerPitchInput(LookUpRate * value);
 		FRotator ControlRot = GetControlRotation();
 		// LogOnScreen(this, FString::Printf(TEXT("Running: %s"), *ControlRot.ToString()), FColor::Green);
-		if (!((ControlRot.Pitch > 0.0f && ControlRot.Pitch < 10.0f) || (ControlRot.Pitch > 330.0f && ControlRot.Pitch < 360.0f))) {
+		if (!((ControlRot.Pitch >= 0.0f && ControlRot.Pitch <= 10.0f) || (ControlRot.Pitch >= 330.0f && ControlRot.Pitch <= 360.0f))) {
 			if (FMath::Abs(ControlRot.Pitch - 10.0f) < 10.0f)
 				ControlRot.Pitch = 10.0f;
 			else

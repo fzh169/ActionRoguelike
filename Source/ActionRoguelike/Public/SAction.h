@@ -36,6 +36,7 @@ protected:
 	UPROPERTY(ReplicatedUsing = "OnRep_RepData")		// 仅当通过网络收到的新值与本地旧值不同时被触发
 	FActionRepData RepData;
 
+	UPROPERTY(Replicated)
 	float TimeStarted;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
