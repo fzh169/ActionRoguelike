@@ -61,11 +61,6 @@ public:
 
 protected:
 
-	FString SlotName;
-
-	UPROPERTY()
-	USSaveGame* CurrentSaveGame;
-
 	FTimerHandle TimerHandle_SpawnBots;
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
@@ -118,11 +113,4 @@ public:
 	void KillAll();
 
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
-
-	UFUNCTION(BlueprintCallable, Category = "SaveGame")
-	void WriteSaveGame();
-
-	void LoadSaveGame();
-
-	void LoadSavedActors();
 };

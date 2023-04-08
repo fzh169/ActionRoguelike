@@ -47,17 +47,47 @@ bool ASPlayerState::UseCredits(int32 Delta)
 	return false;
 }
 
+bool ASPlayerState::UpdatePersonalRecord(float NewTime)
+{
+	if (NewTime > PersonalRecordTime) {
+		float OldRecord = PersonalRecordTime;
+		PersonalRecordTime = NewTime;
+		OnRecordTimeChanged.Broadcast(this, PersonalRecordTime, OldRecord);
+		return true;
+	}
+	return false;
+}
+
 void ASPlayerState::SavePlayerState_Implementation(USSaveGame* SaveObject)
 {
 	if (SaveObject) {
-		SaveObject->Credits = Credits;
+		FPlayerSaveData SaveData;
+		SaveData.Credits = Credits;
+		SaveData.PersonalRecordTime = PersonalRecordTime;
+		SaveData.PlayerID = GetUniqueId().ToString();
+
+		// 保存时可能不存在(Not Alive)
+		if (APawn* MyPawn = GetPawn()) {
+			SaveData.Location = MyPawn->GetActorLocation();
+			SaveData.Rotation = MyPawn->GetActorRotation();
+			SaveData.bResumeAtTransform = true;
+		}
+
+		SaveObject->SavedPlayers.Add(SaveData);
 	}
 }
 
 void ASPlayerState::LoadPlayerState_Implementation(USSaveGame* SaveObject)
 {
 	if (SaveObject) {
-		AddCredits(SaveObject->Credits);		// 触发OnCreditsChanged
+		FPlayerSaveData* FoundData = SaveObject->GetPlayerData(this);
+		if (FoundData) {
+			AddCredits(FoundData->Credits);		// 触发OnCreditsChanged
+			PersonalRecordTime = FoundData->PersonalRecordTime;
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Could not find SaveGame data for player id '%i'."), GetPlayerId());
+		}
 	}
 }
 

@@ -19,13 +19,12 @@
 #include "SActionComponent.h"
 #include "Engine/AssetManager.h"
 #include "../ActionRoguelike.h"
+#include "SSaveGameSubsystem.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("fm.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
 
 ASGameModeBase::ASGameModeBase()
 {
-	SlotName = "SaveGame01";
-
 	SpawnTimerInterval = 2.0f;
 	RespawnDelay = 10.0f;
 	CreditsPerKill = 20;
@@ -38,28 +37,20 @@ void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FS
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
+	USSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<USSaveGameSubsystem>();
 	FString SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
-	if (SelectedSaveSlot.Len() > 0) {
-		SlotName = SelectedSaveSlot;
-	}
-
-	LoadSaveGame();
+	SG->LoadSaveGame(SelectedSaveSlot);
 }
 
 void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
-	LoadSavedActors();
-
-	// GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
+	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
 
 	if (ensure(PowerupClasses.Num() > 0)) {
-
 		UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, PowerupSpawnQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
-
 		if (ensure(QueryInstance)) {
-
 			QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnPowerupSpawnQueryCompleted);
 		}
 	}
@@ -67,12 +58,14 @@ void ASGameModeBase::StartPlay()
 
 void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
-	ASPlayerState* PS = NewPlayer->GetPlayerState<ASPlayerState>();
-	if (ensure(PS)) {
-		PS->LoadPlayerState(CurrentSaveGame);
-	}
+	USSaveGameSubsystem* SG = GetGameInstance()->GetSubsystem<USSaveGameSubsystem>();
+	SG->HandleStartingNewPlayer(NewPlayer);
 
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);		// 将调用PlayerController中的BeginPlayingState()
+
+	SG->OverrideSpawnTransform(NewPlayer);		// 覆盖玩家生成位置
+
+	// 或者：跳过整个“查找玩家启动”逻辑，立即使用存储位置覆盖生成位置
 }
 
 void ASGameModeBase::SpawnBotTimerElapsed()
@@ -255,76 +248,4 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor), *GetNameSafe(Killer));
-}
-
-void ASGameModeBase::WriteSaveGame()
-{
-	for (int32 i = 0; i < GameState->PlayerArray.Num(); ++i) {
-		ASPlayerState* PS = Cast<ASPlayerState>(GameState->PlayerArray[i]);
-		if (PS) {
-			PS->SavePlayerState(CurrentSaveGame);
-			break;		// 单人游戏
-		}
-	}
-
-	CurrentSaveGame->SavedActors.Empty();
-
-	for (FActorIterator It(GetWorld()); It; ++It) {
-		AActor* Actor = *It;
-		if (!Actor->Implements<USGameplayInterface>()) {
-			continue;
-		}
-		FActorSaveData ActorData;
-		ActorData.ActorName = Actor->GetName();
-		ActorData.Transform = Actor->GetTransform();
-
-		FMemoryWriter MemWriter(ActorData.ByteData);
-		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
-		Ar.ArIsSaveGame = true;			// 只寻找被标记为UPROPERTY(SaveGame)的变量
-		Actor->Serialize(Ar);
-
-		CurrentSaveGame->SavedActors.Add(ActorData);
-	}
-
-	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
-}
-
-void ASGameModeBase::LoadSaveGame()
-{
-	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0)) {
-		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
-		if (CurrentSaveGame == nullptr) {
-			UE_LOG(LogTemp, Warning, TEXT("Failed to load SaveGame Data."));
-			return;
-		}
-		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data."));
-	}
-	else {
-		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
-		UE_LOG(LogTemp, Log, TEXT("Created New SaveGame Data."));
-	}
-}
-
-void ASGameModeBase::LoadSavedActors()
-{
-	for (FActorIterator It(GetWorld()); It; ++It) {
-		AActor* Actor = *It;
-		if (!Actor->Implements<USGameplayInterface>()) {
-			continue;
-		}
-		for (FActorSaveData ActorData : CurrentSaveGame->SavedActors) {
-			if (ActorData.ActorName == Actor->GetName()) {
-				Actor->SetActorTransform(ActorData.Transform);
-
-				FMemoryReader MemReader(ActorData.ByteData);
-				FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
-				Ar.ArIsSaveGame = true;
-				Actor->Serialize(Ar);
-
-				ISGameplayInterface::Execute_OnActorLoaded(Actor);
-
-				break;
-			}
-		}
-	}
 }

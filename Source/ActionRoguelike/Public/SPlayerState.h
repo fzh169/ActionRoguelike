@@ -6,9 +6,11 @@
 #include "GameFramework/PlayerState.h"
 #include "SPlayerState.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, ASPlayerState*, PlayerState, int32, NewCredits, int32, Delta);
-
+class APlayerState;
 class USSaveGame;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, ASPlayerState*, PlayerState, int32, NewCredits, int32, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnRecordTimeChanged, ASPlayerState*, PlayerState, float, NewTime, float, OldRecord);
 
 /**
  * 
@@ -22,6 +24,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = "OnRep_Credits", Category = "Credits")
 	int32 Credits;
+
+	UPROPERTY(BlueprintReadOnly)
+	float PersonalRecordTime;
 
 	UFUNCTION()
 	void OnRep_Credits(int32 OldCredits);	// OnRep_可以使用包含其绑定到的变量旧值的参数，用于计算delta。
@@ -42,8 +47,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Credits")
 	bool UseCredits(int32 Delta);
 
-	UPROPERTY(BlueprintAssignable, Category = "Credits")
+	UFUNCTION(BlueprintCallable)
+	bool UpdatePersonalRecord(float NewTime);
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnCreditsChanged OnCreditsChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FOnRecordTimeChanged OnRecordTimeChanged;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void SavePlayerState(USSaveGame* SaveObject);
